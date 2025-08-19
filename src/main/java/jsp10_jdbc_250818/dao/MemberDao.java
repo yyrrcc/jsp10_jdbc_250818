@@ -28,6 +28,9 @@ public class MemberDao {
 	public static final int ID_EXISTENT = 1;
 	public static final int ID_NONEXISTENT = 0;
 	
+	public static final int MEMBER_UPDATE_SUCCESS = 1;
+	public static final int MEMBER_UPDATE_FAIL = 0;
+	
 	
 	// 회원가입 정보 삽입 메서드 + 매개변수로 MemberDto 클래스 이용
 	public int insertMember (MemberDto memberDto) { 
@@ -193,4 +196,139 @@ public class MemberDao {
 	}
 
 	
+	
+	// 회원 정보 수정을 위해 아이디를 조회해서 회원 정보 가져오기
+	public MemberDto getMemberInfo (String id) { 
+		String sql = "SELECT * FROM membertbl WHERE memberid = ?";
+		MemberDto memberDto = new MemberDto();
+		
+		try {
+			Class.forName(driverName);
+			conn = DriverManager.getConnection(url, username, password);
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			rs = pstmt.executeQuery();
+			
+			if (rs.next()) {
+				// 멤버객체.값저장하기(rs.값가져오기("sql column값"))
+				memberDto.setMemberid(rs.getString("memberid"));
+				memberDto.setMemberpw(rs.getString("memberpw"));
+				memberDto.setMembername(rs.getString("membername"));
+				memberDto.setMemberage(rs.getInt("memberage"));
+				memberDto.setMemberemail(rs.getString("memberemail"));
+				memberDto.setMemberdate(rs.getString("memberdate"));
+			}
+			
+			} catch (Exception e) {
+				System.out.println("DB 에러 발생, 회원 정보 가져오기 실패");
+				e.printStackTrace();
+			} finally { 
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+					if (pstmt != null) {
+						pstmt.close();
+					}
+					if (conn != null) {
+						conn.close();
+				}
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		return memberDto;
+	}
+	
+
+	
+	// 회원 정보 수정된 회원 정보 결과 가져오기 + 매개변수로 각각 변수
+	public int updateMember (String id, String pw, String name, int age, String email) {
+		String sql = "UPDATE membertbl SET memberpw = ?, membername = ?, memberage = ?, memberemail = ? WHERE memberid = ?";
+		int sqlResult = 0;
+		
+		try {
+			Class.forName(driverName);
+			conn = DriverManager.getConnection(url, username, password);
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, pw);
+			pstmt.setString(2, name);
+			pstmt.setInt(3, age);
+			pstmt.setString(4, email);
+			pstmt.setString(5, id);
+
+			sqlResult = pstmt.executeUpdate(); // 1이면 성공.
+			
+			} catch (Exception e) {
+				System.out.println("DB 에러 발생, 회원 수정 실패");
+				e.printStackTrace();
+			} finally { 
+				try {
+					if (pstmt != null) {
+						pstmt.close();
+					}
+					if (conn != null) {
+						conn.close();
+				}
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		
+		if (sqlResult == 1) {
+			return MEMBER_UPDATE_SUCCESS;
+		} else {
+			return MEMBER_UPDATE_FAIL;
+		}
+
+	}
+	
+	
+	
+	// 회원 정보 수정된 회원 정보 결과 가져오기 + 매개변수 MemberDto **************************************
+	public int updateMember2 (MemberDto memberDto) {
+		String sql = "UPDATE membertbl SET memberpw = ?, membername = ?, memberage = ?, memberemail = ? WHERE memberid = ?";
+		int sqlResult = 0;
+		
+		try {
+			Class.forName(driverName);
+			conn = DriverManager.getConnection(url, username, password);
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, memberDto.getMemberpw());
+			pstmt.setString(2, memberDto.getMembername());
+			pstmt.setInt(3, memberDto.getMemberage());
+			pstmt.setString(4, memberDto.getMemberemail());
+			pstmt.setString(5, memberDto.getMemberid());
+
+			sqlResult = pstmt.executeUpdate();
+			
+			} catch (Exception e) {
+				System.out.println("DB 에러 발생, 회원 수정 실패");
+				e.printStackTrace();
+			} finally { 
+				try {
+					if (pstmt != null) {
+						pstmt.close();
+					}
+					if (conn != null) {
+						conn.close();
+				}
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		
+		if (sqlResult == 1) {
+			return MEMBER_UPDATE_SUCCESS;
+		} else {
+			return MEMBER_UPDATE_FAIL;
+		}
+	}
+		
 }

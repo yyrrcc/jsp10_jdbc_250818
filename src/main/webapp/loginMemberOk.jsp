@@ -21,6 +21,11 @@
 		} else {
 			out.println("<script> alert('로그인 실패'); history.go(-1); </script>");
 		}
+		
+		request.setAttribute("mid", mid);
 	%>
+	<h4>${mid }님 환영합니다. - request 객체 이용</h4>
+	<h4>${sessionId }님 환영합니다. - session 에서 가져옴</h4>
+	<h4><a href="modifyMember.jsp">회원 정보 수정하기</a></h4>
 </body>
 </html>
