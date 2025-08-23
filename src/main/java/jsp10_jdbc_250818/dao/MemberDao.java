@@ -13,7 +13,7 @@ public class MemberDao {
 	private String driverName = "com.mysql.cj.jdbc.Driver"; 
 	private String url = "jdbc:mysql://localhost:3306/jspdb";
 	private String username = "root";
-	private String password = "12345";
+	private String password = System.getenv("DB_PASSWORD");
 	
 	Connection conn = null;
 	PreparedStatement pstmt = null;
